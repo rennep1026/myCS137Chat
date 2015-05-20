@@ -11,10 +11,12 @@ class View():
     def connect_view(self):
         pass
 
+
 class CustView(View):
 
     def connect_view(self):
         self.handler.do_send("Welcome to our chat system! Please hold for an agent")
+
 
 class AgentView(View):
 
