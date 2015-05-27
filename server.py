@@ -25,11 +25,9 @@ class MyHandler(Handler):
                         h.do_send(msg['join']+" has joined the chat.")
         elif 'txt' in msg:
             for h in handlers:
-                #TODO Route messages through view
-                thisHandler = h.get_handler()
-                thisHandler.do_send(msg['speak']+": "+msg['txt'])
+                handlers[h][0].pass_msg(msg['speak']+": "+msg['txt'])
 
-port = 8888
+port = 8990
 server = Listener(port, MyHandler)
 while 1:
     poll(timeout=0.05) # in seconds

@@ -14,7 +14,7 @@ class Client(Handler):
     def on_msg(self, msg):
         print msg
         
-host, port = 'localhost', 8888
+host, port = 'localhost', 8990
 client = Client(host, port)
 client.do_send({'join': myname})
 

@@ -11,6 +11,8 @@ class View():
     def connect_view(self):
         pass
 
+    def pass_msg(self, msg):
+        self.handler.do_send(msg)
 
 class CustView(View):
 
