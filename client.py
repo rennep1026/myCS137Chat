@@ -2,21 +2,36 @@ from network import Handler, poll
 import sys
 from threading import Thread
 from time import sleep
+from view import *
 
-
+view = View()
 myname = raw_input('What is your name? ')
+clientType = 'cust'
+if myname.split()[0].lower() == 'agent':
+    view = AgentView()
+    clientType = 'agent'
+else:
+    view = CustView()
+view.connect_view()
 
 class Client(Handler):
     
     def on_close(self):
-        pass
+        quit()
     
     def on_msg(self, msg):
-        print msg
+        if 'command' in msg:
+            self.view.handleCommand(msg)
+        elif 'msg' in msg:
+            print msg['txt']
+
+    def set_view(self, view):
+        self.view = view
         
 host, port = 'localhost', 8888
 client = Client(host, port)
-client.do_send({'join': myname})
+client.set_view(view)
+client.do_send({'join': myname, 'type': clientType, 'choice': view.get_choice()})
 
 def periodic_poll():
     while 1:
@@ -27,6 +42,11 @@ thread = Thread(target=periodic_poll)
 thread.daemon = True  # die when the main thread dies 
 thread.start()
 
-while 1:
+while True:
     mytxt = sys.stdin.readline().rstrip()
-    client.do_send({'speak': myname, 'txt': mytxt})
+    if mytxt != '' and mytxt[0] == ':':
+        view.handleLocal(mytxt)
+    else:
+        client.do_send({'msg': myname, 'txt': mytxt})
+
+client.do_close()

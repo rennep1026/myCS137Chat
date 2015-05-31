@@ -1,36 +1,46 @@
 from network import Listener, Handler, poll
-from view import CustView, AgentView
 
-
-handlers = []  # list of views
  
+cust = {}  # map client handler to user name
+agent = {}
+
 class MyHandler(Handler):
      
     def on_open(self):
         pass
          
     def on_close(self):
-        pass
+        if self in cust:
+            cust.pop(self)
+        elif self in agent:
+            agent.pop(self)
      
     def on_msg(self, msg):
         print msg
         if 'join' in msg:
-            if msg['join'].split()[0] == 'Agent':
-                handlers.append(AgentView(self, msg['join']))
+            if msg['type']=='agent':
+                agentCount = len(agent)
+                if agentCount >= 1:
+                    self.do_send({"close": "The chat is currently full. Please try again later."})
+                    self.do_close()
+                agent[self] = {'name': msg['join'], 'type': msg['type'], 'choice': msg['choice']}
+                if len(cust) > 0:
+                    thisCust = cust.values()[0]
+                    self.do_send({'command': 'option', 'val': thisCust['choice'], 'name': thisCust['name']})
             else:
-                handlers.append(CustView(self, msg['join']))
-                for h in handlers:
-                    thisHandler = h.get_handler()
-                    if thisHandler != self:
-                        thisHandler.do_send(msg['join']+" has joined the chat.")
-        elif 'txt' in msg:
-            for h in handlers:
-                thisHandler = h.get_handler()
-                thisHandler.do_send(msg['speak']+": "+msg['txt'])
-
+                custCount = len(cust)
+                if custCount >= 1:
+                    self.do_send({"close": "The chat is currently full. Please try again later."})
+                    self.do_close()
+                cust[self] = {'name': msg['join'], 'type': msg['type'], 'choice': msg['choice']}
+        elif 'msg' in msg:
+            if len(cust) > 0:
+                cust.keys()[0].do_send({'msg': msg['msg'], 'txt': msg['msg']+": "+msg['txt']})
+            if len(agent) > 0:
+                agent.keys()[0].do_send({'msg': msg['msg'], 'txt': msg['msg']+": "+msg['txt']})
+ 
+ 
 port = 8888
 server = Listener(port, MyHandler)
 while 1:
     poll(timeout=0.05) # in seconds
-
-
