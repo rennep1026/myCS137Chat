@@ -1,11 +1,20 @@
 class View():
+    def __init__(self):
+        self.options = ["Please enter the number of the issue you need assistance with today", "1: Ordering",
+                        "2: Returns", "3: Technical Support", "4: Comlaints"]
+        self.choice = 0
 
-    def __init__(self, handler):
-        self.handler = handler
-        self.connect_view()
+    def displayText(self, msg):
+        print msg
 
-    def pass_msg(self, msg):
-        self.handler.do_send(msg)
+    def handleCommand(self, command):
+        pass
+
+    def get_choice(self):
+        return self.choice
+
+    def handleLocal(self, command):
+        pass
 
     # override
     def connect_view(self):
@@ -13,17 +22,26 @@ class View():
 
 
 class CustView(View):
-
     def connect_view(self):
-        self.handler.do_send({"type": "text", "txt": "Welcome to our chat system!"})
-        self.handler.do_send({"type": "text", "txt": "Please enter the number of what you need help with."})
-        self.handler.do_send({"type": "text", "txt": "1: Ordering"})
-        self.handler.do_send({"type": "text", "txt": "2: Returns"})
-        self.handler.do_send({"type": "text", "txt": "3: Technical Support"})
-        self.handler.do_send({"type": "text", "txt": "4: Complaints"})
+        for s in self.options:
+            print s
+        choice = 0
+        while choice < 1 or choice > 4:
+            choice = raw_input("Option number? ")
+            try:
+                choice = int(choice)
+            except ValueError:
+                choice = 0
+        self.choice = choice
+        print "An agent will assist you shortly"
 
 
 class AgentView(View):
-
     def connect_view(self):
-        self.handler.do_send({"type": "text", "txt": "Please wait for a customer to join."})
+        print "Please wait for a customer to join and/or choose an option."
+
+    def handleCommand(self, c):
+        if c['command'] == 'option':
+            option = int(c['val'])
+            print c['name'] + " needs assistance with the following: "
+            print self.options[option]

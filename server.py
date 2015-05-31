@@ -1,8 +1,7 @@
 from network import Listener, Handler, poll
-from view import CustView, AgentView
 
-handlers = {}  # Key: Handler Object, Value: list(View, String(name))
-waiting = {}
+cust = {}  # map client handler to user name
+agent = {}
 
 class MyHandler(Handler):
 
@@ -10,29 +9,37 @@ class MyHandler(Handler):
         pass
          
     def on_close(self):
-        handlers.pop(self)
+        if self in cust:
+            cust.pop(self)
+        elif self in agent:
+            agent.pop(self)
      
     def on_msg(self, msg):
         print msg
-        if msg['type'] == 'join':
-            if msg['cust_type'] == 'Agent':
-                handlers[self] = (AgentView(self), msg['join'], msg['cust_type'])
+        if 'join' in msg:
+            if msg['type']=='agent':
+                agentCount = len(agent)
+                if agentCount >= 1:
+                    self.do_send({"close": "The chat is currently full. Please try again later."})
+                    self.do_close()
+                agent[self] = {'name': msg['join'], 'type': msg['type'], 'choice': msg['choice']}
+                if len(cust) > 0:
+                    thisCust = cust.values()[0]
+                    self.do_send({'command': 'option', 'val': thisCust['choice'], 'name': thisCust['name']})
             else:
-                handlers[self] = (CustView(self), msg['join'], msg['cust_type'])
-                for h in handlers:
-                    if h != self:
-                        handlers[h][0].pass_msg({'type': 'text', 'txt': msg['join']+" has joined the chat."})
-        elif msg['type'] == 'text':
-            for h in handlers:
-                handlers[h][0].pass_msg({'type': 'text', 'txt': msg['speak']+": "+msg['txt']})
-        elif msg['type'] == 'choice':
-            for h in handlers:
-                if handlers[h][2] == 'Agent':
-                    handlers[h][0].pass_msg({'type': 'text', 'txt': "Customer needs help with option "+msg['txt']})
-
-port = 8990
+                custCount = len(cust)
+                if custCount >= 1:
+                    self.do_send({"close": "The chat is currently full. Please try again later."})
+                    self.do_close()
+                cust[self] = {'name': msg['join'], 'type': msg['type'], 'choice': msg['choice']}
+        elif 'msg' in msg:
+            if len(cust) > 0:
+                cust.keys()[0].do_send({'msg': msg['msg'], 'txt': msg['msg']+": "+msg['txt']})
+            if len(agent) > 0:
+                agent.keys()[0].do_send({'msg': msg['msg'], 'txt': msg['msg']+": "+msg['txt']})
+ 
+ 
+port = 8888
 server = Listener(port, MyHandler)
 while 1:
     poll(timeout=0.05) # in seconds
-
-
