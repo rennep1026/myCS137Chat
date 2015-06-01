@@ -4,6 +4,9 @@ from threading import Thread
 from time import sleep
 from view import *
 
+host = raw_input('Enter an IP address: ')
+port = int(raw_input('Enter port number: '))
+
 view = View()
 myname = raw_input('What is your name? ')
 clientType = 'cust'
@@ -23,12 +26,12 @@ class Client(Handler):
         if 'command' in msg:
             self.view.handleCommand(msg)
         elif 'msg' in msg:
-            print msg['txt']
+            self.view.displayText(msg['txt'])
 
     def set_view(self, view):
         self.view = view
         
-host, port = 'localhost', 8888
+#host, port = 'localhost', 8888
 client = Client(host, port)
 client.set_view(view)
 client.do_send({'join': myname, 'type': clientType, 'choice': view.get_choice()})

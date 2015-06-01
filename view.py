@@ -3,8 +3,10 @@ class View():
         self.options = ["Please enter the number of the issue you need assistance with today", "1: Ordering",
                         "2: Returns", "3: Technical Support", "4: Comlaints"]
         self.choice = 0
+        self.transcript = ''
 
     def displayText(self, msg):
+        self.transcript += msg+'\n'
         print msg
 
     def handleCommand(self, command):
@@ -14,7 +16,12 @@ class View():
         return self.choice
 
     def handleLocal(self, command):
-        pass
+        if command==':q':
+            quit()
+        if command==':s':
+            with open('transcript.txt', 'w') as f:
+                f.write(self.transcript)
+
 
     # override
     def connect_view(self):

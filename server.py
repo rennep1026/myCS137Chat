@@ -1,4 +1,4 @@
-from network import Listener, Handler, poll
+from network import Listener, Handler, poll, get_my_ip
 
 cust = {}  # map client handler to user name
 agent = {}
@@ -32,6 +32,9 @@ class MyHandler(Handler):
                     self.do_send({"close": "The chat is currently full. Please try again later."})
                     self.do_close()
                 cust[self] = {'name': msg['join'], 'type': msg['type'], 'choice': msg['choice']}
+                if len(agent) > 0:
+                    theAgent = agent.keys()[0]
+                    theAgent.do_send({'command': 'option', 'val': msg['choice'], 'name': msg['join']})
         elif 'msg' in msg:
             if len(cust) > 0:
                 cust.keys()[0].do_send({'msg': msg['msg'], 'txt': msg['msg']+": "+msg['txt']})
@@ -41,5 +44,7 @@ class MyHandler(Handler):
  
 port = 8888
 server = Listener(port, MyHandler)
+print "IP Address: " + str(get_my_ip())
+print "Port #: " + str(port)
 while 1:
     poll(timeout=0.05) # in seconds
