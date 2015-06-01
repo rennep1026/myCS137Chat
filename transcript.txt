@@ -1,11 +1,10 @@
-Agent Tay: Hi Taylor, I can assit you with tech support!
-Agent Tay: What do you need help with?
-Taylor: Hi Tay! My computer is borken!
-Taylor: I'm not even sure how I'm typing right now!
-Agent Tay: Oh no!
-Agent Tay: Lets see if I can fix that!
-Agent Tay: Lets see if this will show up!
-Agent Tay: Okay!
-Agent Tay: ?!
-Taylor: Alright!
-Taylor: <3
+agent tay: hello there!
+agent tay: How are you today?
+tay1: i'm good!
+tay1: how about you?1
+agent tay: great!
+tay1: bye!
+tay2: Hello!
+tay2: How are you?!
+agent tay: I'm greeeat
+agent tay: hiya

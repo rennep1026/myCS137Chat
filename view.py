@@ -40,7 +40,6 @@ class CustView(View):
             except ValueError:
                 choice = 0
         self.choice = choice
-        print "An agent will assist you shortly"
 
 
 class AgentView(View):
