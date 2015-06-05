@@ -1,7 +1,7 @@
 class View():
     def __init__(self):
         self.options = ["Please enter the number of the issue you need assistance with today", "1: Ordering",
-                        "2: Returns", "3: Technical Support", "4: Comlaints"]
+                        "2: Returns", "3: Technical Support", "4: Complaints"]
         self.choice = 0
         self.transcript = ''
 
@@ -21,6 +21,16 @@ class View():
         if command==':s':
             with open('transcript.txt', 'w') as f:
                 f.write(self.transcript)
+        if command==':e':
+            print '''
+        Pocket Whale __       __
+                     '.'--.--'.-'
+       .,_------.___,   \\' r'
+       ', '-._a      '-' .'
+        '.    '-'Y \._  /
+          '--;____'--.'-,
+           /..'       '\''
+            '''
 
 
     # override
